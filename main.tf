@@ -102,3 +102,72 @@ resource "aws_subnet" "SBN_ARQUITECTURA_006" {
         aws_vpc.VPCARQUITECTURA 
     ]
 }
+
+resource "aws_internet_gateway" "IGW_ARQUITECTURA_001" {
+    vpc_id = aws_vpc.VPCARQUITECTURA.id
+    tags = {
+        Name = "igw-arq-${var.environment}-001"
+        Environment = "${var.environment}"
+        Owner = "devgalop"
+    }
+    depends_on = [ 
+        aws_vpc.VPCARQUITECTURA 
+    ]
+}
+
+# Elastic IP for NAT Gateway
+resource "aws_eip" "EIP_ARQUITECTURA_001" {
+    domain = "vpc"
+    
+    tags = {
+        Name = "nat-arq-${var.environment}-001"
+        Environment = "${var.environment}"
+        Owner = "devgalop"
+    }
+    depends_on = [ 
+        aws_internet_gateway.IGW_ARQUITECTURA_001 #Depende del Internet Gateway para salir a internet
+    ]
+}
+
+
+resource "aws_nat_gateway" "NAT_ARQUITECTURA_001" {
+    allocation_id = aws_eip.EIP_ARQUITECTURA_001.id
+    subnet_id = aws_subnet.SBN_ARQUITECTURA_001.id # Se asocia a la subred pública 001
+    connectivity_type = "public"
+    tags = {
+        Name = "nat-arq-${var.environment}-001"
+        Environment = "${var.environment}"
+        Owner = "devgalop"
+    }
+    depends_on = [ 
+        aws_eip.EIP_ARQUITECTURA_001,
+        aws_internet_gateway.IGW_ARQUITECTURA_001,
+        aws_subnet.SBN_ARQUITECTURA_001
+    ]
+}
+
+resource "aws_route_table" "RT_ARQUITECTURA_Public_001" {
+    vpc_id = aws_vpc.VPCARQUITECTURA.id
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = aws_internet_gateway.IGW_ARQUITECTURA_001.id
+    }
+    tags = {
+        Name = "rt-arq-public-${var.environment}-001"
+        Environment = "${var.environment}"
+        Owner = "devgalop"
+    }
+    depends_on = [ 
+        aws_vpc.VPCARQUITECTURA,
+        aws_internet_gateway.IGW_ARQUITECTURA_001
+    ]
+}
+
+resource "aws_route_table_association" "RTA_ARQUITECTURA_Public_001" {
+    subnet_id = aws_subnet.SBN_ARQUITECTURA_001.id
+    route_table_id = aws_route_table.RT_ARQUITECTURA_Public_001.id
+    depends_on = [
+        aws_route_table.RT_ARQUITECTURA_Public_001,
+        aws_subnet.SBN_ARQUITECTURA_001
+    ]
+}
