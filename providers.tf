@@ -8,8 +8,12 @@ terraform{
   }
   #Configure the backend to store the state file locally
   #The state file can be stored in a remote backend like S3, but for this example, we will store it locally
-  backend "local"{
-    path = "./state/terraform.tfstate"
+  backend "s3"{
+    bucket = "devgalop-storage-001"
+    key    = "state/terraform.tfstate"
+    region = "us-east-1"
+    encrypt = true
+    profile = "pseminario"
   }
 }
 
