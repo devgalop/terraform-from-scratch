@@ -83,3 +83,28 @@ variable "availability_zone_2" {
   type        = string
   default     = "us-east-1c"
 }
+
+variable "master_type" {
+  description = "The instance type for the master node"
+  type        = string
+  default     = "t3.medium"
+}
+
+variable "key_name" {
+  description = "The name of the SSH key pair to use for the instances"
+  type        = string
+  default     = "devgalop"
+}
+
+variable "root_volume_size" {
+  description = "The size of the root volume for the instances"
+  type        = number
+  default     = 50
+}
+
+variable "root_volume_type" {
+  description = "The type of the root volume for the instances"
+  type        = string
+  default     = "gp3"
+}
+

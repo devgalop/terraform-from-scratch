@@ -12,3 +12,18 @@ module "network" {
     private_subnet_3 = var.subnet_5_cidr
     private_subnet_4 = var.subnet_6_cidr
 }
+
+module "security" {
+    source = "./modules/security"
+    vpc_id = module.network.vpc_id
+}
+
+module "compute" {
+    source = "./modules/compute"
+    master_type = var.master_type
+    public_subnet_id = module.network.public_subnet_1_id
+    security_group_id = module.security.security_group_id
+    key_name = var.key_name
+    root_volume_size = var.root_volume_size
+    root_volume_type = var.root_volume_type
+}
