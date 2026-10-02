@@ -2,7 +2,7 @@ resource "aws_instance" "master" {
     ami = "ami-0fef201115eefe936"  # AMI ID from the AWS Management Console or your preferred source
     instance_type = var.master_type
     subnet_id     = var.public_subnet_id
-    vpc_security_group_ids = [var.security_group_id]
+    vpc_security_group_ids = [var   .security_group_id]
     associate_public_ip_address = true # Ensure the instance gets a public IP address
     key_name = var.key_name # Specify the key pair name for SSH access Must be created previously
     root_block_device {
@@ -22,4 +22,8 @@ resource "aws_instance" "master" {
     tags = {
         Name = "MasterInstance-${terraform.workspace}"
     }
+}
+
+output "worker_instance_id" {
+    value = aws_instance.master.id
 }

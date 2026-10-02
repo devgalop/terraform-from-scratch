@@ -27,3 +27,11 @@ module "compute" {
     root_volume_size = var.root_volume_size
     root_volume_type = var.root_volume_type
 }
+
+module "load_balancer" {
+    source = "./modules/load_balancer"
+    security_group_ids = [module.security.security_group_id]
+    subnet_ids = [module.network.public_subnet_1_id, module.network.public_subnet_2_id]
+    vpc_id = module.network.vpc_id
+    worker_instance_id = module.compute.worker_instance_id
+}
